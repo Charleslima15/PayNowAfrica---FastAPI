@@ -1,0 +1,26 @@
+# Environment
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+*.db
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.DS_Store
+
+# Alembic
+migrations/versions/*.pyc
+
+# Logs
+*.log
+
+# Distribution
+dist/
+build/
+*.egg-info/
