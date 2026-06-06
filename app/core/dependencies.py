@@ -39,11 +39,10 @@ def get_token_from_header(authorization: str = Header(...)) -> str:
 
 # --- Current user extraction ---
 
-def get_current_user(
+async def get_current_user(
     token: str = Depends(get_token_from_header),
     db: DBSession = Depends(get_db),
 ) -> User:
-    import asyncio
     from app.services.token_service import is_token_blacklisted
 
     try:
@@ -58,10 +57,7 @@ def get_current_user(
     if not jti:
         raise InvalidTokenError()
 
-    # Check blacklist synchronously inside sync dependency
-    blacklisted = asyncio.get_event_loop().run_until_complete(
-        is_token_blacklisted(redis_client, jti)
-    )
+    blacklisted = await is_token_blacklisted(redis_client, jti)
     if blacklisted:
         raise NotAuthenticatedError(detail="Token has been revoked")
 
@@ -94,6 +90,6 @@ def get_admin_user(
     current_user: User = Depends(get_current_verified_user),
 ) -> User:
     from app.core.exceptions import PermissionDeniedError
-    # We will add an is_admin field to User in a future migration
-    # For now this is a placeholder that enforces the pattern
-    raise PermissionDeniedError()
+    if not current_user.is_admin:
+        raise PermissionDeniedError()
+    return current_user

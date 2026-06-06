@@ -39,3 +39,4 @@ class KYCStatusResponse(BaseModel):
     id_type: Optional[str] = None
     verified_at: Optional[datetime] = None
     failure_reason: Optional[str] = None
+
